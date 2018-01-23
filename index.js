@@ -24,8 +24,12 @@ const persons = [
   }
 ]
 
+app.get('/info', (req, res) => {
+  res.send(`puhelinluettelossa ${persons.length} henkilön tiedot<br/><br/>
+            ${new Date().toUTCString()}`)
+})
+
 app.get('/api/persons', (req, res) => {
-  console.log(`Sending ${persons.length} entries to ${req.ip}`)
   res.json(persons)
 })
 
