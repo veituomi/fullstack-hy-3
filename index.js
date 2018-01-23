@@ -1,7 +1,7 @@
 const express = require('express')
 const app = express()
 
-const persons = [
+let persons = [
   {
     "name": "Arto Hellas",
     "number": "040-123456",
@@ -39,6 +39,16 @@ app.get('/api/persons/:id', (req, res) => {
     res.send(404)
   } else {
     res.json(person)
+  }
+})
+
+app.delete('/api/persons/:id', (req, res) => {
+  const count = persons.length
+  persons = persons.filter(person => person.id != req.params.id)
+  if (count == persons.length) {
+    res.send(404)
+  } else {
+    res.send(204)
   }
 })
 
