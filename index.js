@@ -1,6 +1,12 @@
 const express = require('express')
 const app = express()
 
+const cors = require('cors')
+const bodyParser = require('body-parser')
+
+app.use(bodyParser.json())
+app.use(cors())
+
 let persons = [
   {
     "name": "Arto Hellas",
@@ -31,6 +37,17 @@ app.get('/info', (req, res) => {
 
 app.get('/api/persons', (req, res) => {
   res.json(persons)
+})
+
+app.post('/api/persons', (req, res) => {
+  const body = req.body
+  const person = {
+    name: body.name,
+    number: body.number,
+    id: Math.floor(Math.random() * 100000)
+  }
+  persons = [...persons, person]
+  res.json(person)
 })
 
 app.get('/api/persons/:id', (req, res) => {
