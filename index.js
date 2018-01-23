@@ -7,7 +7,15 @@ const morgan = require('morgan')
 
 app.use(bodyParser.json())
 app.use(cors())
-app.use(morgan('tiny'))
+app.use(morgan((tokens, req, res) => {
+  return [
+    tokens.method(req, res),
+    tokens.url(req, res),
+    JSON.stringify(req.body),
+    tokens.status(req, res),
+    tokens['response-time'](req, res), ' ms'
+  ].join(' ')
+}))
 
 let persons = [
   {
