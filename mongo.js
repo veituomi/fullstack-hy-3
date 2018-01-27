@@ -16,7 +16,7 @@ const Person = mongoose.model('Person', personSchema);
 
 let promise;
 
-if (params.length == 0) {
+if (params.length === 0) {
   promise = Person
     .find({})
     .then(res => {
@@ -37,6 +37,7 @@ if (params.length == 0) {
     .save()
     .then(response => {
       console.log('lisätään henkilö ' + name + ' numero ' + number + ' luetteloon');
+      console.log(response)
     });
 }
 

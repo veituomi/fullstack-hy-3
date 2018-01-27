@@ -41,7 +41,7 @@ app.post('/api/persons', (req, res) => {
   const body = req.body
 
   const required = ['name', 'number']
-  const missing = required.filter(prop => body[prop] == undefined)
+  const missing = required.filter(prop => body[prop] === undefined)
 
   if (missing.length > 0) {
     return res.send(400, { error: `Missing ${missing.join(' and ')}.` })
@@ -74,7 +74,7 @@ app.put('/api/persons/:id', (req, res) => {
   const body = req.body
 
   const required = ['name', 'number']
-  const missing = required.filter(prop => body[prop] == undefined)
+  const missing = required.filter(prop => body[prop] === undefined)
 
   if (missing.length > 0) {
     return res.send(400, { error: `Missing ${missing.join(' and ')}.` })

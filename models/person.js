@@ -14,7 +14,7 @@ const personSchema = new mongoose.Schema({
   number: String
 })
 
-personSchema.statics.format = ({ _id, name, number}) => ({
+personSchema.statics.format = ({ _id, name, number }) => ({
   id: _id,
   name,
   number
