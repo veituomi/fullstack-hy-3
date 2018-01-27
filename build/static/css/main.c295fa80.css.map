@@ -1,0 +1,1 @@
+{"version":3,"sources":["styles.css"],"names":[],"mappings":"AAAA,cACE,gBACA,eACA,UAAY","file":"static/css/main.c295fa80.css","sourcesContent":[".notification {\r\n  background: #00ff00;\r\n  font-size: 20px;\r\n  margin: 5px;\r\n}\r\n\n\n\n// WEBPACK FOOTER //\n// ./src/styles.css"],"sourceRoot":""}
