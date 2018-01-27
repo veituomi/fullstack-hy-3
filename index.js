@@ -1,3 +1,5 @@
+const Person = require('./models/person');
+
 const express = require('express')
 const app = express()
 
@@ -18,36 +20,21 @@ app.use(morgan((tokens, req, res) => {
   ].join(' ')
 }))
 
-let persons = [
-  {
-    "name": "Arto Hellas",
-    "number": "040-123456",
-    "id": 1
-  },
-  {
-    "name": "Martti Tienari",
-    "number": "040-123456",
-    "id": 2
-  },
-  {
-    "name": "Arto Järvinen",
-    "number": "040-123456",
-    "id": 3
-  },
-  {
-    "name": "Lea Kutvonen",
-    "number": "040-123456",
-    "id": 4
-  }
-]
-
 app.get('/info', (req, res) => {
-  res.send(`puhelinluettelossa ${persons.length} henkilön tiedot<br/><br/>
-            ${new Date().toUTCString()}`)
-})
+  Person
+    .count({})
+    .then(response => {
+      res.send(`puhelinluettelossa ${response} henkilön tiedot<br/><br/>
+                ${new Date().toUTCString()}`);
+    });
+});
 
 app.get('/api/persons', (req, res) => {
-  res.json(persons)
+  Person
+    .find({})
+    .then(result => {
+      res.json(result.map(Person.format))
+    });
 })
 
 app.post('/api/persons', (req, res) => {
@@ -60,36 +47,75 @@ app.post('/api/persons', (req, res) => {
     return res.send(400, { error: `Missing ${missing.join(' and ')}.` })
   }
 
-  if (persons.some(person => person.name == body.name)) {
-    return res.json(500, { error: 'Person already exists!' })
-  }
-
-  const person = {
+  const person = new Person({
     name: body.name,
-    number: body.number,
-    id: Math.floor(Math.random() * 100000)
-  }
-  persons = [...persons, person]
-  res.json(person)
+    number: body.number
+  });
+
+  Person
+    .count({ name: body.name })
+    .then(count => {
+      if (count > 0) {
+        res.json(500, { error: 'Person already exists!' })
+      } else {
+        person
+          .save()
+          .then(saved => {
+            res.json(Person.format(saved));
+          })
+          .catch(err => {
+            res.send(500, { error: err });
+          });
+      }
+    })
 })
 
-app.get('/api/persons/:id', (req, res) => {
-  const person = persons.find(person => person.id == req.params.id)
-  if (person == undefined) {
-    res.send(404)
-  } else {
-    res.json(person)
+app.put('/api/persons/:id', (req, res) => {
+  const body = req.body
+
+  const required = ['name', 'number']
+  const missing = required.filter(prop => body[prop] == undefined)
+
+  if (missing.length > 0) {
+    return res.send(400, { error: `Missing ${missing.join(' and ')}.` })
   }
+
+  const person = new Person({
+    _id: req.params.id,
+    name: body.name,
+    number: body.number
+  });
+
+  Person
+    .update({ _id: req.params.id }, person)
+    .then(response => {
+      console.log(response)
+      res.send(Person.format(response))
+    });
+});
+
+app.get('/api/persons/:id', (req, res) => {
+  Person
+    .find({ _id: req.params.id })
+    .then(response => {
+      if (response.length > 0) {
+        res.send(Person.format(response[0]));
+      } else {
+        res.send(404);
+      }
+    })
+    .catch(err => console.log(err));
 })
 
 app.delete('/api/persons/:id', (req, res) => {
-  const count = persons.length
-  persons = persons.filter(person => person.id != req.params.id)
-  if (count == persons.length) {
-    res.send(404)
-  } else {
-    res.send(204)
-  }
+  Person
+    .deleteOne({
+      _id: req.params.id
+    })
+    .then(res => {
+      console.log(res)
+    })
+  res.send(204);
 })
 
 const PORT = process.env.PORT || 3001
